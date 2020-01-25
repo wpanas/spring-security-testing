@@ -10,7 +10,6 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.security.test.context.support.WithAnonymousUser
 import org.springframework.security.test.context.support.WithMockUser
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
@@ -30,7 +29,7 @@ class GreetingsControllerTests {
 	@ParameterizedTest
 	@ValueSource(strings = ["Mark", "Tom", "Billy"])
 	fun `should save greeting by name`(name: String) {
-		mockMvc.perform(post("/greetings/$name").with(csrf()))
+		mockMvc.perform(post("/greetings/$name"))
 				.andExpect(status().isCreated)
 				.andExpect(jsonPath(".id").isNotEmpty)
 				.andExpect(jsonPath("$.name").value(name))
@@ -56,7 +55,7 @@ class GreetingsControllerTests {
 	@WithAnonymousUser
 	fun `should restrict access to add greeting`() {
 		mockMvc.perform(post("/greetings/Louis"))
-				.andExpect(status().isForbidden)
+				.andExpect(status().isUnauthorized)
 	}
 
 	@TestConfiguration
